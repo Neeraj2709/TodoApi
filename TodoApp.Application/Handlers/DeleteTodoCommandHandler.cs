@@ -1,29 +1,21 @@
 using MediatR;
 using TodoApi.TodoApp.Application.Commands;
-using TodoApi.TodoApp.Infrastructure.Data;
+using TodoApi.TodoApp.Application.Common.Interfaces;
 
 namespace TodoApi.TodoApp.Application.Handlers
 {
     public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, bool>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ITodoRepository _todoRepository;
 
-        public DeleteTodoCommandHandler(ApplicationDbContext context)
+        public DeleteTodoCommandHandler(ITodoRepository todoRepository)
         {
-            _context = context;
+            _todoRepository = todoRepository;
         }
 
         public async Task<bool> Handle(DeleteTodoCommand request, CancellationToken cancellationToken)
         {
-            var todo = await _context.TodoItems.FindAsync(request.Id);
-
-            if (todo == null)
-                return false;
-
-            _context.TodoItems.Remove(todo);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return true;
+            return await _todoRepository.DeleteAsync(request.Id, cancellationToken);
         }
     }
 }

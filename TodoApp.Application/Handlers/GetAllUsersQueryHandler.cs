@@ -1,31 +1,22 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using TodoApi.TodoApp.Application.Common.Interfaces;
 using TodoApi.TodoApp.Application.Users.Queries;
 using TodoApi.TodoApp.Domain.DTOs;
-using TodoApi.TodoApp.Infrastructure.Data;
 
-namespace TodoApi.TodoApp.Application.Users.Handlers;
-
-public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserResponse>>
+namespace TodoApi.TodoApp.Application.Users.Handlers
 {
-    private readonly ApplicationDbContext _context;
-
-    public GetAllUsersQueryHandler(ApplicationDbContext context)
+    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<UserResponse>>
     {
-        _context = context;
-    }
+        private readonly IUserRepository _userRepository;
 
-    public async Task<List<UserResponse>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
-    {
-        var users = await _context.Users
-            .Select(u => new UserResponse
-            {
-                Id = u.Id,
-                Username = u.Username,
-                CreatedAt = u.CreatedAt
-            })
-            .ToListAsync(cancellationToken);
+        public GetAllUsersQueryHandler(IUserRepository userRepository)
+        {
+            _userRepository = userRepository;
+        }
 
-        return users;
+        public async Task<List<UserResponse>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
+        {
+            return await _userRepository.GetAllAsync();
+        }
     }
 }

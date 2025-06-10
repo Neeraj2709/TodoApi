@@ -1,45 +1,31 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using TodoApi.TodoApp.Application.Common.Interfaces;
 using TodoApi.TodoApp.Application.Users.Commands;
 using TodoApi.TodoApp.Domain.DTOs;
-using TodoApi.TodoApp.Domain.Entities;
-using TodoApi.TodoApp.Infrastructure.Data;
 
 namespace TodoApi.TodoApp.Application.Users.Handlers
 {
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserResponse>
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public CreateUserCommandHandler(ApplicationDbContext context)
+        public CreateUserCommandHandler(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
         public async Task<UserResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var userExists = await _context.Users
-                .AnyAsync(u => u.Username == request.UserRequest.Username, cancellationToken);
+            var exists = await _userRepository.UsernameExistsAsync(request.UserRequest.Username);
 
-            if (userExists)
+            if (exists)
             {
                 throw new Exception("Username already exists.");
             }
 
-            var user = new User
-            {
-                Username = request.UserRequest.Username
-            };
+            var response = await _userRepository.CreateAsync(request.UserRequest);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync(cancellationToken);
-
-            return new UserResponse
-            {
-                Id = user.Id,
-                Username = user.Username,
-                CreatedAt = user.CreatedAt
-            };
+            return response;
         }
     }
 }

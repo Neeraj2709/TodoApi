@@ -1,7 +1,7 @@
 using MediatR;
 using TodoApi.TodoApp.Domain.DTOs;
 
-public class UpdateUserCommand : IRequest<UserResponse?>
+public class UpdateUserCommand : IRequest<bool>
 {
     public int Id { get; }
     public string NewUsername { get; }
