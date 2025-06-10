@@ -192,3 +192,4 @@
 /Users/neeraj/RiderProjects/WebApplication5/TodoApi/bin/Debug/net9.0/FluentValidation.DependencyInjectionExtensions.dll
 /Users/neeraj/RiderProjects/WebApplication5/TodoApi/obj/Debug/net9.0/TodoApi.MvcApplicationPartsAssemblyInfo.cs
 /Users/neeraj/RiderProjects/WebApplication5/TodoApi/obj/Debug/net9.0/TodoApi.sourcelink.json
+/Users/neeraj/RiderProjects/WebApplication5/TodoApi/bin/Debug/net9.0/appsettings.json

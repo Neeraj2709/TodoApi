@@ -1,6 +1,7 @@
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TodoApi.TodoApp.Application.Users.Commands;
 using TodoApi.TodoApp.Application.Validators;
 using TodoApi.TodoApp.Infrastructure.Data;
 
@@ -13,8 +14,9 @@ builder.Services.AddControllers()
     });
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddMediatR(cfg => 
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblyContaining<CreateUserCommand>());
+
 
 
 var app = builder.Build();

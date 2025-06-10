@@ -1,117 +1,98 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TodoApi.TodoApp.Domain.Entities;
-using TodoApi.TodoApp.Infrastructure.Data;
+using TodoApi.TodoApp.Application.Users.Commands;
+using TodoApi.TodoApp.Application.Users.Queries;
+using TodoApi.TodoApp.Domain.DTOs;
 
 namespace TodoApi.TodoApp.Api.Controllers;
 
-public class UserController
+[ApiController]
+[Route("api/[controller]")]
+public class UsersController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    private readonly IMediator _mediator;
+
+    public UsersController(IMediator mediator)
     {
-        private readonly ApplicationDbContext _context;
+        _mediator = mediator;
+    }
 
-        public UsersController(ApplicationDbContext context)
+    // Get all users
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = await _mediator.Send(new GetAllUsersQuery());
+
+        if (users == null || !users.Any())
         {
-            _context = context;
+            return NotFound(new { message = "No users found." });
         }
 
-        // Get All Users
-        [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        return Ok(users);
+    }
+
+    // Get user by ID
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserById(int id)
+    {
+        var user = await _mediator.Send(new GetUserByIdQuery(id));
+
+        if (user == null)
         {
-            var users = await _context.Users.ToListAsync();
-
-            if (users == null || !users.Any())
-            {
-                return NotFound(new { message = "No users found in the database." });
-            }
-
-            return Ok(users);
+            return NotFound(new { message = "User not found." });
         }
 
-        // Add User
-        [HttpPost]
-        public async Task<IActionResult> AddUser([FromBody] User user)
+        return Ok(user);
+    }
+
+    // Get user by username
+    [HttpGet("find/{username}")]
+    public async Task<IActionResult> GetUserByUsername(string username)
+    {
+        var user = await _mediator.Send(new GetUserByUsernameQuery(username));
+
+        if (user == null)
         {
-            try
-            {
-                
-                if (await _context.Users.AnyAsync(u => u.Username == user.Username))
-                {
-                    return Conflict(new { message = "Username already exists." });
-                }
-
-                _context.Users.Add(user);
-                await _context.SaveChangesAsync();
-
-                return CreatedAtAction(nameof(GetAllUsers), new { id = user.Id }, user);
-            }
-            catch (DbUpdateException)
-            {
-                return StatusCode(500, new { message = "An unexpected error occurred while processing your request. Please try again later." });
-            }
+            return NotFound(new { message = "User not found." });
         }
 
-        // Find User by Username
-        [HttpGet("find/{username}")]
-        public async Task<IActionResult> GetUserByUsername(string username)
+        return Ok(user);
+    }
+
+    // Add a new user
+    [HttpPost]
+    public async Task<IActionResult> CreateUser([FromBody] UserRequest request)
+    {
+        var response = await _mediator.Send(new CreateUserCommand(request));
+
+        return CreatedAtAction(nameof(GetUserById), new { id = response.Id }, response);
+    }
+
+    // Update username
+    [HttpPut("{id}/update-username")]
+    public async Task<IActionResult> UpdateUsername(int id, [FromBody] string newUsername)
+    {
+        var response = await _mediator.Send(new UpdateUserCommand(id, newUsername));
+
+        if (response == null)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == username);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
-
-            return Ok(new
-            {
-                user.Id,
-                user.Username
-            });
+            return NotFound(new { message = "User not found or username already taken." });
         }
 
-        // Update Username
-        [HttpPut("update/{currentUsername}/{newUsername}")]
-        public async Task<IActionResult> UpdateUsername(string currentUsername, string newUsername)
+        return Ok(response);
+    }
+
+    // Delete user
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        var result = await _mediator.Send(new DeleteUserCommand(id));
+
+        if (!result)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == currentUsername);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
-
-           
-            if (await _context.Users.AnyAsync(u => u.Username == newUsername))
-            {
-                return Conflict(new { message = "Username already exists." });
-            }
-
-            user.Username = newUsername;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Username updated successfully", user });
+            return NotFound(new { message = "User not found." });
         }
 
-        // Delete User
-        [HttpDelete("delete/{username}")]
-        public async Task<IActionResult> DeleteUser(string username)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "User deleted successfully" });
-        }
+        return Ok(new { message = "User deleted successfully." });
     }
 }

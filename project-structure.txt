@@ -1,0 +1,86 @@
+.
+├── TodoApi.csproj
+├── TodoApp.Api
+│   ├── Controllers
+│   │   ├── TodoItemsController.cs
+│   │   └── UserController.cs
+│   ├── Program.cs
+│   ├── Properties
+│   │   └── launchSettings.json
+│   ├── TodoApp.Infrastructure.csproj.EntityFrameworkCore.targets
+│   ├── appsettings.Development.json
+│   └── appsettings.json
+├── TodoApp.Application
+│   ├── Commands
+│   │   ├── CreateTodoCommand.cs
+│   │   ├── CreateUserCommand.cs
+│   │   ├── DeleteTodoCommand.cs
+│   │   ├── DeleteUserCommand.cs
+│   │   ├── UpdateTodoCommand.cs
+│   │   └── UpdateUserCommand.cs
+│   ├── Handlers
+│   │   ├── CreateTodoHandler.cs
+│   │   ├── CreateUserCommandHandler.cs
+│   │   ├── DeleteTodoCommandHandler.cs
+│   │   ├── DeleteUserCommandHandler.cs
+│   │   ├── GetAllUsersQueryHandler.cs
+│   │   ├── GetUserByIdQueryHandler.cs
+│   │   ├── GetUserByUsernameQueryHandler.cs
+│   │   ├── UpdateTodoCommandHandler.cs
+│   │   └── UpdateUserCommandHandler.cs
+│   ├── Queries
+│   │   ├── GetAllTodosQuery.cs
+│   │   ├── GetAllUsersQuery.cs
+│   │   ├── GetTodoByIdQuery.cs
+│   │   ├── GetTodosByUsernameQuery.cs
+│   │   ├── GetUserByIdQuery.cs
+│   │   └── GetUserByUsernameQuery.cs
+│   └── Validators
+│       └── TodoRequestValidator.cs
+├── TodoApp.Domain
+│   ├── DTOs
+│   │   ├── TodoRequest.cs
+│   │   ├── TodoResponse.cs
+│   │   ├── UserRequest.cs
+│   │   └── UserResponse.cs
+│   └── Entities
+│       ├── TodoItem.cs
+│       └── User.cs
+├── TodoApp.Infrastructure
+│   ├── Data
+│   │   ├── ApplicationDbContext.cs
+│   │   └── ApplicationDbContextFactory.cs
+│   ├── Migrations
+│   │   ├── 20250609051828_InitialCreate.Designer.cs
+│   │   ├── 20250609051828_InitialCreate.cs
+│   │   └── ApplicationDbContextModelSnapshot.cs
+│   └── obj
+├── bin
+│   └── Debug
+│       └── net9.0
+├── obj
+│   ├── Debug
+│   │   └── net9.0
+│   ├── TodoApi.csproj.EntityFrameworkCore.targets
+│   ├── TodoApi.csproj.nuget.dgspec.json
+│   ├── TodoApi.csproj.nuget.g.props
+│   ├── TodoApi.csproj.nuget.g.targets
+│   ├── project.assets.json
+│   ├── project.nuget.cache
+│   ├── project.packagespec.json
+│   ├── rider.project.model.nuget.info
+│   └── rider.project.restore.info
+├── project-structure.txt
+└── wwwroot
+    ├── css
+    │   └── site.css
+    ├── favicon.ico
+    ├── js
+    │   └── site.js
+    └── lib
+        ├── bootstrap
+        ├── jquery
+        ├── jquery-validation
+        └── jquery-validation-unobtrusive
+
+30 directories, 54 files
